@@ -1,0 +1,2 @@
+git+git://git.nic.cz/sudsds/
+git+git://github.com/vencax/dslib.git
