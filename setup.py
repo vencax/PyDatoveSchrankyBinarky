@@ -16,10 +16,10 @@ setuptools.setup(
     platforms=['Unix', 'Windows', 'MacOS X'],
     data_files=[
         ('share/pydatoveschranky', ['README.txt']),
-        ('usr/local/bin', ['sendmessage.py']),
+        ('bin', ['sendmessage.py']),
     ],
-    requires=['pyOpenSSL (>=0.9)', 'sudsds (>=1.0)', 'pyasn1 (>=0.0.13)'],
-    install_requires=['pyOpenSSL>=0.9', 'sudsds>=1.0', 'pyasn1>=0.0.13'],
+    requires=['pyOpenSSL (>=0.9)', 'pyasn1 (>=0.0.13)'],
+    install_requires=['pyOpenSSL>=0.9', 'pyasn1>=0.0.13'],
     keywords='datove,schranky',
     include_package_data=True,
 )
