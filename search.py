@@ -58,7 +58,9 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     logging.getLogger('suds').setLevel(logging.ERROR)
 
-    query = args
+    query = args[0].decode('utf-8')
+    
+    logging.info("searching for %s ..." % query) 
 
     try:
         # create the client
