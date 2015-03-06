@@ -16,40 +16,8 @@ python sendmessage.py --username fjdsakj --pwd dsfafafdasdf \
 DSadresaUradu "oznameni uradu"
 '''
 
-import os
-import base64
-import subprocess
-from dslib.client import Client
-from dslib import models
 
-
-def create_attachemet(att_file):
-    dmfile = models.dmFile()
-    try:
-        mime = subprocess.Popen('/usr/bin/file -i %s' % att_file, shell=True,
-                                stdout=subprocess.PIPE).communicate()[0]
-        dmfile._dmMimeType = mime.split(' ')[1].rstrip(';')
-    except Exception:
-        dmfile._dmMimeType = 'text/plain'
-    dmfile._dmFileMetaType = "main"
-    dmfile._dmFileDescr = os.path.basename(att_file)
-    with open(att_file, 'r') as f:
-        dmfile.dmEncodedContent = base64.standard_b64encode(f.read())
-    return dmfile
-
-
-def create_message(client, recipient, subject, attachmentfiles):
-    if not isinstance(attachmentfiles, list):
-        attachmentfiles = [attachmentfiles]
-    envelope = models.dmEnvelope()
-    envelope.dbIDRecipient = recipient
-    envelope.dmAnnotation = subject
-    dmfiles = []
-    for a in attachmentfiles:
-        dmfiles.append(create_attachemet(a))
-    reply = ds_client.CreateMessage(envelope, dmfiles)
-    print reply.status
-    print "Message ID is:", reply.data
+from datoveschranky import sendmessage
 
 
 if __name__ == "__main__":
@@ -79,16 +47,16 @@ subject - predmet DS''')
     logging.getLogger('suds').setLevel(logging.ERROR)
 
     recpt_box_id, subj = args
+    
+    # load attachements
+    attchs = []
+    for a in options.attachements:
+        attchs.append(sendmessage.load_attachement(a))
 
     try:
-        # create the client
-        ds_client = Client(login_method='username',
-                           login=options.uname,
-                           password=options.pwd,
-                           test_environment=False)
-
-        create_message(ds_client, recpt_box_id, subj, options.attachements)
+        reply = sendmessage.send(recpt_box_id, options.uname,
+                                 options.pwd, subj, attchs)
+        print reply.status
+        print "Message ID is:", reply.data
     except Exception, e:
-        logging.error(str(e))
-    finally:
-        ds_client.logout_from_server()
+        print str(e)
