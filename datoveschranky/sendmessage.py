@@ -10,6 +10,7 @@ import base64
 import subprocess
 from dslib.client import Client
 from dslib import models
+from sudsds.sax.text import Text
 
 
 def send(recpt_box_id, uname, pwd, subj, attachements):
@@ -46,8 +47,8 @@ def _create_attachemet(mime, desc, content):
     dmfile = models.dmFile()
     dmfile._dmMimeType = mime
     dmfile._dmFileMetaType = "main"
-    dmfile._dmFileDescr = desc
-    dmfile.dmEncodedContent = content
+    dmfile._dmFileDescr = Text(desc, escaped=True)
+    dmfile.dmEncodedContent = Text(content, escaped=True)
     return dmfile
 
 
