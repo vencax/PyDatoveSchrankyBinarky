@@ -47,8 +47,8 @@ def _create_attachemet(mime, desc, content):
     dmfile = models.dmFile()
     dmfile._dmMimeType = mime
     dmfile._dmFileMetaType = "main"
-    dmfile._dmFileDescr = Text(desc, escaped=True)
-    dmfile.dmEncodedContent = Text(content, escaped=True)
+    dmfile._dmFileDescr = desc
+    dmfile.dmEncodedContent = content
     return dmfile
 
 
@@ -57,7 +57,7 @@ def _create_message(ds_client, recipient, subject, attachmentfiles):
         attachmentfiles = [attachmentfiles]
     envelope = models.dmEnvelope()
     envelope.dbIDRecipient = recipient
-    envelope.dmAnnotation = subject
+    envelope.dmAnnotation = Text(subject, escaped=True)
     dmfiles = []
     for a in attachmentfiles:
         dmfiles.append(_create_attachemet(*a))
