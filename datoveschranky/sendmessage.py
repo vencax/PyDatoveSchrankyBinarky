@@ -5,11 +5,12 @@ Created on Dec 3, 2012
 @author: vencax
 '''
 
-import os
 import base64
+import os
 import subprocess
-from dslib.client import Client
+
 from dslib import models
+from dslib.client import Client
 from sudsds.sax.text import Text
 
 
@@ -17,6 +18,7 @@ def send(recpt_box_id, uname, pwd, subj, attachements):
     """
     attachements: list of tuples of (mime, description, content)
     """
+    ds_client = None
     try:
         # create the client
         ds_client = Client(login_method='username',
@@ -26,9 +28,10 @@ def send(recpt_box_id, uname, pwd, subj, attachements):
 
         return _create_message(ds_client, recpt_box_id, subj, attachements)
     finally:
-        ds_client.logout_from_server()
-        
-        
+        if ds_client:
+            ds_client.logout_from_server()
+
+
 def load_attachement(att_file):
     try:
         mime = subprocess.Popen('/usr/bin/file -i %s' % att_file, shell=True,
@@ -36,7 +39,7 @@ def load_attachement(att_file):
         mime = mime.split(' ')[1].rstrip(';')
     except Exception:
         mime = 'text/plain'
-    
+
     desc = os.path.basename(att_file)
     with open(att_file, 'r') as f:
         content = base64.standard_b64encode(f.read())
@@ -61,5 +64,4 @@ def _create_message(ds_client, recipient, subject, attachmentfiles):
     dmfiles = []
     for a in attachmentfiles:
         dmfiles.append(_create_attachemet(*a))
-    return ds_client.CreateMessage(envelope, dmfiles)    
-    
+    return ds_client.CreateMessage(envelope, dmfiles)
