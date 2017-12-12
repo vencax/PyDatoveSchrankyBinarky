@@ -31,19 +31,23 @@ def send(recpt_box_id, uname, pwd, subj, attachements):
         if ds_client:
             ds_client.logout_from_server()
 
+def get_mime(att_file):
+    """
+    NOTE: this uses LINUX utility called file that returns mime of given file
+    """
+    try:
+        cmd = 'file -i %s' % att_file
+        call = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE) 
+        mime = call.communicate()[0]
+        return mime.split(' ')[1].rstrip(';')
+    except Exception:
+        return 'text/plain'
 
 def load_attachement(att_file):
-    try:
-        mime = subprocess.Popen('/usr/bin/file -i %s' % att_file, shell=True,
-                                stdout=subprocess.PIPE).communicate()[0]
-        mime = mime.split(' ')[1].rstrip(';')
-    except Exception:
-        mime = 'text/plain'
-
     desc = os.path.basename(att_file)
     with open(att_file, 'r') as f:
         content = base64.standard_b64encode(f.read())
-    return (mime, desc, content)
+    return (get_mime(att_file), desc, content)
 
 
 def _create_attachemet(mime, desc, content):
